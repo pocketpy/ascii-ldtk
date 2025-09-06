@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tilemap Editor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- <h1>Tilemap Editor</h1> -->
+  <div id="controls">
+    <div>
+      <label>Width: <input type="number" id="mapWidth" value="10" min="1" /></label>
+      <label>Height: <input type="number" id="mapHeight" value="10" min="1" /></label>
+      <button id="createMap">Create Tilemap</button>
+    </div>
+    <div>
+      <label>Render Mode:
+        <select id="renderMode">
+          <option value="all">All Layers</option>
+          <option value="t_ground">Ground</option>
+          <option value="t_floor">Floor</option>
+          <option value="t_plant">Plant</option>
+          <option value="t_block">Block</option>
+        </select>
+      </label>
+      <label>Scale:
+        <input type="range" id="scaleSlider" min="50" max="200" value="100" />
+      </label>
+    </div>
+  </div>
+  <div id="tileSelector"></div>
+  <div style="display: flex;">
+    <div id="yTicks" style="display: flex; flex-direction: column;"></div>
+    <div style="display: flex; flex-direction: column;">
+      <div id="xTicks" style="display: flex;"></div>
+      <div id="tilemapContainer" style="display: grid;"></div>
+    </div>
+  </div>
+  <script src="tiles.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
