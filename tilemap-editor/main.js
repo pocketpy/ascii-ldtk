@@ -84,7 +84,18 @@ function renderTilemap() {
       }
 
       tileDiv.addEventListener("click", () => {
-        cell[selectedTile.layer] = selectedTile;
+        if (selectedTile.is_void()) {
+          if (mode === "all") {
+            for (const layer of layers) {
+              cell[layer] = AllTiles[0];
+            }
+          } else {
+            cell[mode] = AllTiles[0];
+          }
+        } else {
+          if (selectedTile.layer !== mode && mode !== "all") return;
+          cell[selectedTile.layer] = selectedTile;
+        }
         renderTilemap();
       });
 
@@ -125,10 +136,22 @@ function blendCellColor(cell) {
 function renderTileSelector() {
   for (const id in AllTiles) {
     const tile = AllTiles[id];
-    if (!tile.layer) continue;
+    // if (!tile.layer) continue;
     const btn = document.createElement("div");
+    btn.style.width = "20px";
+    btn.style.height = "24px";
+    btn.style.display = "flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+
     btn.className = "tile-option";
     btn.textContent = tile.char;
+    if (tile.fg) {
+      btn.style.color = `rgb(${tile.fg.r},${tile.fg.g},${tile.fg.b})`;
+    }
+    if (tile.bg) {
+      btn.style.backgroundColor = `rgba(${tile.bg.r},${tile.bg.g},${tile.bg.b},${tile.bg.a})`;
+    }
     btn.title = `${tile.layer} #${tile.id}`;
     btn.addEventListener("click", () => {
       document.querySelectorAll(".tile-option").forEach(el => el.classList.remove("selected"));

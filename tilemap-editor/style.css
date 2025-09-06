@@ -22,7 +22,6 @@ body {
   padding: 2px;
   border: 2px solid #ccc;
   cursor: pointer;
-  font-size: 20px;
   background: white;
 }
 
@@ -52,4 +51,8 @@ body {
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
+}
+
+.tile:hover {
+  border: 2px solid rgba(255, 255, 255, 0.5);
 }
