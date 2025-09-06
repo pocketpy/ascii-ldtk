@@ -30,10 +30,13 @@ body {
   border: 2px solid black;
 }
 
+#tilemapAll {
+  transform-origin: top left;
+}
+
 #tilemapContainer {
   display: grid;
   background: #0C0C0C;
-  transform-origin: top left;
   position: relative;
 }
 

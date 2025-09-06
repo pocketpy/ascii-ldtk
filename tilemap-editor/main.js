@@ -1,3 +1,4 @@
+const tilemapAll = document.getElementById("tilemapAll");
 const tilemapContainer = document.getElementById("tilemapContainer");
 const tileSelector = document.getElementById("tileSelector");
 const createMapBtn = document.getElementById("createMap");
@@ -49,6 +50,8 @@ function renderTilemap() {
     xTicks.appendChild(tick);
   }
 
+  // yTicks append a space height the same as xTicks
+  yTicks.appendChild(document.createElement("div")).style.height = "16px";
   for (let y = 0; y < height; y++) {
     const yTick = document.createElement("div");
     yTick.style.height = "24px";
@@ -56,6 +59,12 @@ function renderTilemap() {
     yTick.style.color = "black";
     yTick.style.fontSize = "12px";
     yTick.style.textAlign = "right";
+    // center vertically and right align
+    yTick.style.display = "flex";
+    yTick.style.alignItems = "center";
+    yTick.style.justifyContent = "flex-end";
+    // add some padding to the right
+    yTick.style.paddingRight = "4px";
     yTick.textContent = y;
     yTicks.appendChild(yTick);
 
@@ -140,5 +149,5 @@ renderTileSelector();
 renderModeSelect.addEventListener("change", renderTilemap);
 scaleSlider.addEventListener("input", () => {
   const scale = parseInt(scaleSlider.value) / 100;
-  tilemapContainer.style.transform = `scale(${scale})`;
+  tilemapAll.style.transform = `scale(${scale})`;
 });
