@@ -69,7 +69,7 @@ function renderTilemap() {
       const mode = renderModeSelect.value;
       const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
       tileDiv.textContent = topTile.char;
-      tileDiv.style.backgroundColor = topTile.bg ? `rgba(${topTile.bg.r},${topTile.bg.g},${topTile.bg.b},${topTile.bg.a})` : (mode === "all" ? blendColor(cell) : "transparent");
+      tileDiv.style.backgroundColor = topTile.bg ? `rgba(${topTile.bg.r},${topTile.bg.g},${topTile.bg.b},${topTile.bg.a})` : (mode === "all" ? blendCellColor(cell) : "transparent");
       if (topTile.fg) {
         tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
       }
@@ -92,18 +92,25 @@ function getTopTile(cell) {
   return AllTiles[0];
 }
 
-function blendColor(cell) {
-  let r = 255, g = 255, b = 255, a = 1;
+function blendColor(src, dst_or_null) {
+  if (dst_or_null === null) return src;
+  const dst = dst_or_null;
+  const alpha = src.a / 255.0;
+  const r = Math.round(src.r * alpha + dst.r * (1 - alpha));
+  const g = Math.round(src.g * alpha + dst.g * (1 - alpha));
+  const b = Math.round(src.b * alpha + dst.b * (1 - alpha));
+  const a = Math.round((src.a + dst.a * (1 - alpha)));
+  return { r, g, b, a };
+}
+
+function blendCellColor(cell) {
+  let src = null;
   for (const layer of layers) {
     const tile = cell[layer];
-    if (tile.bg) {
-      const ta = tile.bg.a;
-      r = r * (1 - ta) + tile.bg.r * ta;
-      g = g * (1 - ta) + tile.bg.g * ta;
-      b = b * (1 - ta) + tile.bg.b * ta;
-    }
+    if (tile.bg === null) continue;
+    src = blendColor(tile.bg, src);
   }
-  return `rgb(${r|0},${g|0},${b|0})`;
+  return src === null ? "transparent" : `rgba(${src.r},${src.g},${src.b},${(src.a / 255).toFixed(2)})`;
 }
 
 function renderTileSelector() {

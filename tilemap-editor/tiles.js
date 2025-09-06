@@ -17,11 +17,11 @@ class Tile {
 }
 
 function rgb(r, g, b) {
-  return { r, g, b, a: 1 };
+  return { r: r, g: g, b: b, a: 255 };
 }
 
 function rgba(r, g, b, a) {
-  return { r, g, b, a };
+  return { r: r, g: g, b: b, a: Math.round(a * 255) };
 }
 
 const AllTiles = {
