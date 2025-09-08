@@ -2,6 +2,8 @@ const tilemapAll = document.getElementById("tilemapAll");
 const tilemapContainer = document.getElementById("tilemapContainer");
 const tileSelector = document.getElementById("tileSelector");
 const createMapBtn = document.getElementById("createMap");
+const importMapBtn = document.getElementById("importMap");
+const exportMapBtn = document.getElementById("exportMap");
 const renderModeSelect = document.getElementById("renderMode");
 const mapWidthInput = document.getElementById("mapWidth");
 const scaleSlider = document.getElementById("scaleSlider");
@@ -28,6 +30,38 @@ function createTilemap(width, height) {
     tilemap.push(row);
   }
   renderTilemap();
+}
+
+function importTilemap(data) {
+  const width = data.width;
+  const height = data.height;
+  tilemap = [];
+  for (let y = 0; y < height; y++) {
+    const row = [];
+    for (let x = 0; x < width; x++) {
+      const cell = {
+        t_ground: AllTiles[data.t_ground[y][x]] || AllTiles[0],
+        t_floor: AllTiles[data.t_floor[y][x]] || AllTiles[0],
+        t_plant: AllTiles[data.t_plant[y][x]] || AllTiles[0],
+        t_block: AllTiles[data.t_block[y][x]] || AllTiles[0],
+      };
+      row.push(cell);
+    }
+    tilemap.push(row);
+  }
+}
+
+function exportTilemap() {
+  const width = tilemap[0].length;
+  const height = tilemap.length;
+  return {
+    width: width,
+    height: height,
+    t_ground: tilemap.map(row => row.map(cell => cell.t_ground.id)),
+    t_floor: tilemap.map(row => row.map(cell => cell.t_floor.id)),
+    t_plant: tilemap.map(row => row.map(cell => cell.t_plant.id)),
+    t_block: tilemap.map(row => row.map(cell => cell.t_block.id)),
+  }
 }
 
 function renderTilemap() {
@@ -166,6 +200,20 @@ createMapBtn.addEventListener("click", () => {
   const width = parseInt(mapWidthInput.value);
   const height = parseInt(mapHeightInput.value);
   createTilemap(width, height);
+});
+
+importMapBtn.addEventListener("click", () => {
+  const data = prompt("Paste tilemap JSON data:");
+  if (data) {
+    const obj = JSON.parse(data);
+    importTilemap(obj);
+    renderTilemap();
+  }
+});
+
+exportMapBtn.addEventListener("click", () => {
+  const data = exportTilemap();
+  console.log(JSON.stringify(data));
 });
 
 renderTileSelector();
