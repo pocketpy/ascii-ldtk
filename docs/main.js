@@ -213,12 +213,15 @@ importMapBtn.addEventListener("click", () => {
 
 exportMapBtn.addEventListener("click", () => {
   const data = exportTilemap();
-  console.log(JSON.stringify(data));
+  copyPopup(JSON.stringify(data));
 });
 
-renderTileSelector();
 renderModeSelect.addEventListener("change", renderTilemap);
 scaleSlider.addEventListener("input", () => {
   const scale = parseInt(scaleSlider.value) / 100;
   tilemapAll.style.transform = `scale(${scale})`;
 });
+
+renderTileSelector();
+createTilemap(parseInt(mapWidthInput.value), parseInt(mapHeightInput.value));
+
