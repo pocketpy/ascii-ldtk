@@ -11,8 +11,14 @@ const mapHeightInput = document.getElementById("mapHeight");
 
 let tilemap = [];
 let selectedTile = AllTiles[1]; // default selected tile
+let isPainting = false;
 
 const layers = ["t_ground", "t_floor", "t_plant", "t_block"];
+
+
+document.addEventListener("mouseup", () => {
+  isPainting = false;
+});
 
 function createTilemap(width, height) {
   tilemap = [];
@@ -61,6 +67,21 @@ function exportTilemap() {
     t_floor: tilemap.map(row => row.map(cell => cell.t_floor.id)),
     t_plant: tilemap.map(row => row.map(cell => cell.t_plant.id)),
     t_block: tilemap.map(row => row.map(cell => cell.t_block.id)),
+  }
+}
+
+function paintCell(cell, mode) {
+  if (selectedTile.is_void()) {
+    if (mode === "all") {
+      for (const layer of layers) {
+        cell[layer] = AllTiles[0];
+      }
+    } else {
+      cell[mode] = AllTiles[0];
+    }
+  } else {
+    if (selectedTile.layer !== mode && mode !== "all") return;
+    cell[selectedTile.layer] = selectedTile;
   }
 }
 
@@ -117,19 +138,19 @@ function renderTilemap() {
         tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
       }
 
-      tileDiv.addEventListener("click", () => {
-        if (selectedTile.is_void()) {
-          if (mode === "all") {
-            for (const layer of layers) {
-              cell[layer] = AllTiles[0];
-            }
-          } else {
-            cell[mode] = AllTiles[0];
-          }
-        } else {
-          if (selectedTile.layer !== mode && mode !== "all") return;
-          cell[selectedTile.layer] = selectedTile;
-        }
+      tileDiv.addEventListener("mousedown", () => {
+        paintCell(cell, mode);
+        isPainting = true;
+        renderTilemap();
+      });
+
+      tileDiv.addEventListener("mouseup", () => {
+        isPainting = false;
+      });
+
+      tileDiv.addEventListener("mouseenter", () => {
+        if (!isPainting) return;
+        paintCell(cell, mode);
         renderTilemap();
       });
 
@@ -217,6 +238,7 @@ exportMapBtn.addEventListener("click", () => {
 });
 
 renderModeSelect.addEventListener("change", renderTilemap);
+
 scaleSlider.addEventListener("input", () => {
   const scale = parseInt(scaleSlider.value) / 100;
   tilemapAll.style.transform = `scale(${scale})`;
