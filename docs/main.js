@@ -133,7 +133,9 @@ function renderTilemap() {
       const mode = renderModeSelect.value;
       const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
       tileDiv.textContent = topTile.char;
-      tileDiv.style.backgroundColor = topTile.bg ? `rgba(${topTile.bg.r},${topTile.bg.g},${topTile.bg.b},${topTile.bg.a})` : (mode === "all" ? blendCellColor(cell) : "transparent");
+      tileDiv.style.backgroundColor = mode === "all" ? blendCellColor(cell): (
+        topTile.bg === null ? "transparent" : removeAlpha(topTile.bg)
+      );
       if (topTile.fg) {
         tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
       }
@@ -178,14 +180,23 @@ function blendColor(src, dst_or_null) {
   return { r, g, b, a };
 }
 
+function removeAlpha(dst) {
+  const alpha = dst.a / 255.0;
+  let r = Math.round(dst.r * alpha);
+  let g = Math.round(dst.g * alpha);
+  let b = Math.round(dst.b * alpha);
+  return `rgb(${r},${g},${b})`;
+}
+
 function blendCellColor(cell) {
-  let src = null;
+  let dst = null;
   for (const layer of layers) {
     const tile = cell[layer];
     if (tile.bg === null) continue;
-    src = blendColor(tile.bg, src);
+    dst = blendColor(tile.bg, dst);
   }
-  return src === null ? "transparent" : `rgba(${src.r},${src.g},${src.b},${(src.a / 255).toFixed(2)})`;
+  if (dst === null) return "transparent";
+  return removeAlpha(dst);
 }
 
 function renderTileSelector() {

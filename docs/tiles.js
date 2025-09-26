@@ -29,7 +29,7 @@ const AllTiles = {
     1: new Tile(1, "t_ground", "・", null, null, "", 0, [], true),
     2: new Tile(2, "t_ground", "，", null, null, "", 0, [], true),
     3: new Tile(3, "t_ground", "〜", null, rgb(0, 191, 255), "", 0, [], false),
-    25: new Tile(25, "t_floor", "　", null, rgba(255, 120, 0, 0.5), "", 0, [], true),
+    25: new Tile(25, "t_floor", "　", null, rgba(255, 120, 0, 0.7), "", 0, [], true),
     50: new Tile(50, "t_plant", "🌿", null, null, "", 0, [], true),
     51: new Tile(51, "t_plant", "🌼", null, null, "", 0, [], true),
     52: new Tile(52, "t_plant", "🪨", null, null, "", 0, [], false),
