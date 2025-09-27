@@ -70,7 +70,20 @@ function exportTilemap() {
   }
 }
 
-function paintCell(cell, mode) {
+function updateTileDiv(cell, mode, tileDiv) {
+  const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
+  tileDiv.textContent = topTile.char;
+  tileDiv.style.backgroundColor = mode === "all" ? blendCellColor(cell) : (
+    topTile.bg === null ? "transparent" : removeAlpha(topTile.bg)
+  );
+  if (topTile.fg) {
+    tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
+  } else {
+    tileDiv.style.color = "white";
+  }
+}
+
+function paintCellAndUpdateTileDiv(cell, mode, tileDiv) {
   if (selectedTile.is_void()) {
     if (mode === "all") {
       for (const layer of layers) {
@@ -80,23 +93,15 @@ function paintCell(cell, mode) {
       cell[mode] = AllTiles[0];
     }
   } else {
-    if (selectedTile.layer !== mode && mode !== "all") return;
+    if (selectedTile.layer !== mode && mode !== "all") {
+      isPainting = false;
+      alert(selectedTile.char + " cannot be placed on '" + mode + "' layer!!");
+      return;
+    }
     cell[selectedTile.layer] = selectedTile;
   }
-}
-
-function updateTileDiv(cell, mode, x, y) {
-  const tileDiv = document.getElementById(`tile-${x}-${y}`);
-  const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
-  tileDiv.textContent = topTile.char;
-  tileDiv.style.backgroundColor = mode === "all" ? blendCellColor(cell): (
-    topTile.bg === null ? "transparent" : removeAlpha(topTile.bg)
-  );
-  if (topTile.fg) {
-    tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
-  } else {
-    tileDiv.style.color = "white";
-  }
+  // 重绘tileDiv
+  updateTileDiv(cell, mode, tileDiv);
 }
 
 function renderTilemap() {
@@ -147,11 +152,10 @@ function renderTilemap() {
       tilemapContainer.appendChild(tileDiv);
 
       const mode = renderModeSelect.value;
-      updateTileDiv(cell, mode, x, y);
+      updateTileDiv(cell, mode, tileDiv);
 
-      tileDiv.addEventListener("mousedown", () => {
-        paintCell(cell, mode);
-        updateTileDiv(cell, mode, x, y);
+      tileDiv.addEventListener("mousedown", (e) => {
+        paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
         isPainting = true;
       });
 
@@ -159,10 +163,9 @@ function renderTilemap() {
         isPainting = false;
       });
 
-      tileDiv.addEventListener("mouseenter", () => {
+      tileDiv.addEventListener("mouseenter", (e) => {
         if (!isPainting) return;
-        paintCell(cell, mode);
-        updateTileDiv(cell, mode, x, y);
+        paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
       });
     }
   }
