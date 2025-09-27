@@ -2,6 +2,7 @@ const tilemapAll = document.getElementById("tilemapAll");
 const tilemapContainer = document.getElementById("tilemapContainer");
 const tileSelector = document.getElementById("tileSelector");
 const createMapBtn = document.getElementById("createMap");
+const clearMapBtn = document.getElementById("clearMap");
 const importMapBtn = document.getElementById("importMap");
 const exportMapBtn = document.getElementById("exportMap");
 const renderModeSelect = document.getElementById("renderMode");
@@ -9,7 +10,7 @@ const mapWidthInput = document.getElementById("mapWidth");
 const scaleSlider = document.getElementById("scaleSlider");
 const mapHeightInput = document.getElementById("mapHeight");
 
-let tilemap = [];
+let tilemap = null;
 let selectedTile = AllTiles[1]; // default selected tile
 let isPainting = false;
 
@@ -21,6 +22,7 @@ document.addEventListener("mouseup", () => {
 });
 
 function createTilemap(width, height) {
+  const oldTileMap = tilemap;
   tilemap = [];
   for (let y = 0; y < height; y++) {
     const row = [];
@@ -34,6 +36,18 @@ function createTilemap(width, height) {
       row.push(cell);
     }
     tilemap.push(row);
+  }
+  // 迁移旧数据
+  if (oldTileMap !== null) {
+    const oldWidth = oldTileMap[0].length;
+    const oldHeight = oldTileMap.length;
+    const minWidth = Math.min(width, oldWidth);
+    const minHeight = Math.min(height, oldHeight);
+    for (let y = 0; y < minHeight; y++) {
+      for (let x = 0; x < minWidth; x++) {
+        tilemap[y][x] = oldTileMap[y][x];
+      }
+    }
   }
   renderTilemap();
 }
@@ -243,6 +257,11 @@ createMapBtn.addEventListener("click", () => {
   const width = parseInt(mapWidthInput.value);
   const height = parseInt(mapHeightInput.value);
   createTilemap(width, height);
+});
+
+clearMapBtn.addEventListener("click", () => {
+  tilemap = null;
+  createTilemap(parseInt(mapWidthInput.value), parseInt(mapHeightInput.value));
 });
 
 importMapBtn.addEventListener("click", () => {
