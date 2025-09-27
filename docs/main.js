@@ -86,7 +86,7 @@ function paintCell(cell, mode) {
 }
 
 function updateTileDiv(cell, mode, x, y) {
-  let tileDiv = document.getElementById(`tile-${x}-${y}`);
+  const tileDiv = document.getElementById(`tile-${x}-${y}`);
   const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
   tileDiv.textContent = topTile.char;
   tileDiv.style.backgroundColor = mode === "all" ? blendCellColor(cell): (
@@ -94,6 +94,8 @@ function updateTileDiv(cell, mode, x, y) {
   );
   if (topTile.fg) {
     tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
+  } else {
+    tileDiv.style.color = "white";
   }
 }
 
