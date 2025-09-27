@@ -85,6 +85,18 @@ function paintCell(cell, mode) {
   }
 }
 
+function updateTileDiv(cell, mode, x, y) {
+  let tileDiv = document.getElementById(`tile-${x}-${y}`);
+  const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
+  tileDiv.textContent = topTile.char;
+  tileDiv.style.backgroundColor = mode === "all" ? blendCellColor(cell): (
+    topTile.bg === null ? "transparent" : removeAlpha(topTile.bg)
+  );
+  if (topTile.fg) {
+    tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
+  }
+}
+
 function renderTilemap() {
   const xTicks = document.getElementById("xTicks");
   const yTicks = document.getElementById("yTicks");
@@ -127,23 +139,18 @@ function renderTilemap() {
       const cell = tilemap[y][x];
       const tileDiv = document.createElement("div");
       tileDiv.className = "tile";
+      tileDiv.id = `tile-${x}-${y}`;
       tileDiv.dataset.x = x;
       tileDiv.dataset.y = y;
+      tilemapContainer.appendChild(tileDiv);
 
       const mode = renderModeSelect.value;
-      const topTile = mode === "all" ? getTopTile(cell) : cell[mode];
-      tileDiv.textContent = topTile.char;
-      tileDiv.style.backgroundColor = mode === "all" ? blendCellColor(cell): (
-        topTile.bg === null ? "transparent" : removeAlpha(topTile.bg)
-      );
-      if (topTile.fg) {
-        tileDiv.style.color = `rgb(${topTile.fg.r},${topTile.fg.g},${topTile.fg.b})`;
-      }
+      updateTileDiv(cell, mode, x, y);
 
       tileDiv.addEventListener("mousedown", () => {
         paintCell(cell, mode);
+        updateTileDiv(cell, mode, x, y);
         isPainting = true;
-        renderTilemap();
       });
 
       tileDiv.addEventListener("mouseup", () => {
@@ -153,10 +160,8 @@ function renderTilemap() {
       tileDiv.addEventListener("mouseenter", () => {
         if (!isPainting) return;
         paintCell(cell, mode);
-        renderTilemap();
+        updateTileDiv(cell, mode, x, y);
       });
-
-      tilemapContainer.appendChild(tileDiv);
     }
   }
 }
