@@ -168,9 +168,16 @@ function renderTilemap() {
       const mode = renderModeSelect.value;
       updateTileDiv(cell, mode, tileDiv);
 
+      tileDiv.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+      });
+
       tileDiv.addEventListener("mousedown", (e) => {
-        const ok = paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
-        isPainting = ok;
+        if (e.button === 0) {
+          const ok = paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
+          isPainting = ok;
+          return;
+        }
       });
 
       tileDiv.addEventListener("mouseup", () => {
