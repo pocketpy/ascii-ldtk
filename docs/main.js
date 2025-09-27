@@ -278,7 +278,7 @@ clearMapBtn.addEventListener("click", () => {
 
 draftMapBtn.addEventListener("click", () => {
   const data = exportTilemap();
-  Cookie.set('draft', data);
+  localStorage.setItem('draft', JSON.stringify(data));
   alert("Draft saved!");
 });
 
@@ -305,9 +305,9 @@ scaleSlider.addEventListener("input", () => {
 renderTileSelector();
 
 // check draft
-const draft = Cookie.get('draft', null);
-if (draft) {
-  importTilemap(draft);
+const draft = localStorage.getItem('draft');
+if (draft !== null) {
+  importTilemap(JSON.parse(draft));
 } else {
   createTilemap(parseInt(mapWidthInput.value), parseInt(mapHeightInput.value));
 }
