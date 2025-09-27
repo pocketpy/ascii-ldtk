@@ -94,14 +94,14 @@ function paintCellAndUpdateTileDiv(cell, mode, tileDiv) {
     }
   } else {
     if (selectedTile.layer !== mode && mode !== "all") {
-      isPainting = false;
-      alert(selectedTile.char + " cannot be placed on '" + mode + "' layer!!");
-      return;
+      alert("Cannot place tile: '" + selectedTile.layer + "' != '" + mode + "'");
+      return false;
     }
     cell[selectedTile.layer] = selectedTile;
   }
   // 重绘tileDiv
   updateTileDiv(cell, mode, tileDiv);
+  return true;
 }
 
 function renderTilemap() {
@@ -155,8 +155,8 @@ function renderTilemap() {
       updateTileDiv(cell, mode, tileDiv);
 
       tileDiv.addEventListener("mousedown", (e) => {
-        paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
-        isPainting = true;
+        const ok = paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
+        isPainting = ok;
       });
 
       tileDiv.addEventListener("mouseup", () => {
@@ -165,7 +165,8 @@ function renderTilemap() {
 
       tileDiv.addEventListener("mouseenter", (e) => {
         if (!isPainting) return;
-        paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
+        const ok = paintCellAndUpdateTileDiv(cell, mode, e.currentTarget);
+        isPainting = ok;
       });
     }
   }
