@@ -48,3 +48,48 @@ function copyPopup(text) {
         document.body.removeChild(overlay);
     };
 }
+
+
+const Cookie = {
+  /**
+   * 设置 Cookie
+   * @param {string} name - 键名
+   * @param {any} value - 值（支持对象/数组）
+   * @param {number} days - 有效期（单位：天）
+   */
+  set(name, value, days = 7) {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = "expires=" + d.toUTCString();
+    const jsonValue = encodeURIComponent(JSON.stringify(value));
+    document.cookie = `${name}=${jsonValue}; ${expires}; path=/`;
+  },
+
+  /**
+   * 获取 Cookie
+   * @param {string} name - 键名
+   * @returns {any} - 返回值（自动解析 JSON）
+   */
+  get(name) {
+    const cookies = document.cookie.split("; ");
+    for (let c of cookies) {
+      const [key, val] = c.split("=");
+      if (key === name) {
+        try {
+          return JSON.parse(decodeURIComponent(val));
+        } catch (e) {
+          return val; // 不是 JSON 则返回原始值
+        }
+      }
+    }
+    return null;
+  },
+
+  /**
+   * 删除 Cookie
+   * @param {string} name - 键名
+   */
+  remove(name) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  }
+};

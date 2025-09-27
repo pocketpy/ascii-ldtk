@@ -3,6 +3,7 @@ const tilemapContainer = document.getElementById("tilemapContainer");
 const tileSelector = document.getElementById("tileSelector");
 const createMapBtn = document.getElementById("createMap");
 const clearMapBtn = document.getElementById("clearMap");
+const draftMapBtn = document.getElementById("draftMap");
 const importMapBtn = document.getElementById("importMap");
 const exportMapBtn = document.getElementById("exportMap");
 const renderModeSelect = document.getElementById("renderMode");
@@ -69,6 +70,10 @@ function importTilemap(data) {
     }
     tilemap.push(row);
   }
+  // 更新width和height
+  mapWidthInput.value = width;
+  mapHeightInput.value = height;
+  renderTilemap();
 }
 
 function exportTilemap() {
@@ -271,12 +276,17 @@ clearMapBtn.addEventListener("click", () => {
   createTilemap(parseInt(mapWidthInput.value), parseInt(mapHeightInput.value));
 });
 
+draftMapBtn.addEventListener("click", () => {
+  const data = exportTilemap();
+  Cookie.set('draft', data);
+  alert("Draft saved!");
+});
+
 importMapBtn.addEventListener("click", () => {
   const data = prompt("Paste tilemap JSON data:");
   if (data) {
     const obj = JSON.parse(data);
     importTilemap(obj);
-    renderTilemap();
   }
 });
 
@@ -293,5 +303,11 @@ scaleSlider.addEventListener("input", () => {
 });
 
 renderTileSelector();
-createTilemap(parseInt(mapWidthInput.value), parseInt(mapHeightInput.value));
 
+// check draft
+const draft = Cookie.get('draft', null);
+if (draft) {
+  importTilemap(draft);
+} else {
+  createTilemap(parseInt(mapWidthInput.value), parseInt(mapHeightInput.value));
+}
