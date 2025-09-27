@@ -8,8 +8,9 @@ const renderModeSelect = document.getElementById("renderMode");
 const mapWidthInput = document.getElementById("mapWidth");
 const scaleSlider = document.getElementById("scaleSlider");
 const mapHeightInput = document.getElementById("mapHeight");
-
 let tilemap = [];
+let dirtyMap = [];
+
 let selectedTile = AllTiles[1]; // default selected tile
 let isPainting = false;
 
@@ -22,8 +23,10 @@ document.addEventListener("mouseup", () => {
 
 function createTilemap(width, height) {
   tilemap = [];
+  dirtyMap = [];
   for (let y = 0; y < height; y++) {
     const row = [];
+    const dirtyRow = [];
     for (let x = 0; x < width; x++) {
       const cell = {
         t_ground: AllTiles[0],
@@ -32,8 +35,10 @@ function createTilemap(width, height) {
         t_block: AllTiles[0],
       };
       row.push(cell);
+      dirtyRow.push(true);
     }
     tilemap.push(row);
+    dirtyMap.push(dirtyRow);
   }
   renderTilemap();
 }
@@ -42,8 +47,10 @@ function importTilemap(data) {
   const width = data.width;
   const height = data.height;
   tilemap = [];
+  dirtyMap = [];
   for (let y = 0; y < height; y++) {
     const row = [];
+    const dirtyRow = [];
     for (let x = 0; x < width; x++) {
       const cell = {
         t_ground: AllTiles[data.t_ground[y][x]] || AllTiles[0],
@@ -52,8 +59,10 @@ function importTilemap(data) {
         t_block: AllTiles[data.t_block[y][x]] || AllTiles[0],
       };
       row.push(cell);
+      dirtyRow.push(true);
     }
     tilemap.push(row);
+    dirtyMap.push(dirtyRow);
   }
 }
 
@@ -70,7 +79,7 @@ function exportTilemap() {
   }
 }
 
-function paintCell(cell, mode) {
+function paintCell(cell, mode, x, y) {
   if (selectedTile.is_void()) {
     if (mode === "all") {
       for (const layer of layers) {
@@ -83,6 +92,7 @@ function paintCell(cell, mode) {
     if (selectedTile.layer !== mode && mode !== "all") return;
     cell[selectedTile.layer] = selectedTile;
   }
+  dirtyMap[y][x] = true;
 }
 
 function renderTilemap() {
@@ -141,7 +151,7 @@ function renderTilemap() {
       }
 
       tileDiv.addEventListener("mousedown", () => {
-        paintCell(cell, mode);
+        paintCell(cell, mode, x, y);
         isPainting = true;
         renderTilemap();
       });
@@ -152,7 +162,7 @@ function renderTilemap() {
 
       tileDiv.addEventListener("mouseenter", () => {
         if (!isPainting) return;
-        paintCell(cell, mode);
+        paintCell(cell, mode, x, y);
         renderTilemap();
       });
 
